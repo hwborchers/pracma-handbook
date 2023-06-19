@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.340">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>pracma Handbook - 5&nbsp; Root Finding</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./integrals.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./rootfinding.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Root Finding</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">pracma Handbook</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./specfun.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Special Functions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./derivatives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Numerical Derivatives</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./integrals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Integation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rootfinding.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Root Finding</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#univariate-roots" id="toc-univariate-roots" class="nav-link active" data-scroll-target="#univariate-roots"><span class="header-section-number">5.1</span> Univariate roots</a>
+  <ul class="collapse">
+  <li><a href="#brent-dekker" id="toc-brent-dekker" class="nav-link" data-scroll-target="#brent-dekker"><span class="header-section-number">5.1.1</span> Brent-Dekker</a></li>
+  <li><a href="#ridders-method" id="toc-ridders-method" class="nav-link" data-scroll-target="#ridders-method"><span class="header-section-number">5.1.2</span> Ridders’ method</a></li>
+  <li><a href="#bisection-and-more" id="toc-bisection-and-more" class="nav-link" data-scroll-target="#bisection-and-more"><span class="header-section-number">5.1.3</span> Bisection and more</a></li>
+  <li><a href="#newton-raphson-haley" id="toc-newton-raphson-haley" class="nav-link" data-scroll-target="#newton-raphson-haley"><span class="header-section-number">5.1.4</span> Newton-Raphson, Haley</a></li>
+  </ul></li>
+  <li><a href="#special-aspects" id="toc-special-aspects" class="nav-link" data-scroll-target="#special-aspects"><span class="header-section-number">5.2</span> Special aspects</a>
+  <ul class="collapse">
+  <li><a href="#quadratic-roots" id="toc-quadratic-roots" class="nav-link" data-scroll-target="#quadratic-roots"><span class="header-section-number">5.2.1</span> Quadratic roots</a></li>
+  <li><a href="#find-all-roots" id="toc-find-all-roots" class="nav-link" data-scroll-target="#find-all-roots"><span class="header-section-number">5.2.2</span> Find all roots</a></li>
+  <li><a href="#high-accuracy-roots" id="toc-high-accuracy-roots" class="nav-link" data-scroll-target="#high-accuracy-roots"><span class="header-section-number">5.2.3</span> High-accuracy roots</a></li>
+  <li><a href="#roots-as-fixed-points" id="toc-roots-as-fixed-points" class="nav-link" data-scroll-target="#roots-as-fixed-points"><span class="header-section-number">5.2.4</span> Roots as fixed points</a></li>
+  </ul></li>
+  <li><a href="#complex-roots" id="toc-complex-roots" class="nav-link" data-scroll-target="#complex-roots"><span class="header-section-number">5.3</span> Complex roots</a>
+  <ul class="collapse">
+  <li><a href="#mullers-method" id="toc-mullers-method" class="nav-link" data-scroll-target="#mullers-method"><span class="header-section-number">5.3.1</span> Muller’s method</a></li>
+  <li><a href="#laguerres-method" id="toc-laguerres-method" class="nav-link" data-scroll-target="#laguerres-method"><span class="header-section-number">5.3.2</span> Laguerre’s method</a></li>
+  </ul></li>
+  <li><a href="#polynomial-roots" id="toc-polynomial-roots" class="nav-link" data-scroll-target="#polynomial-roots"><span class="header-section-number">5.4</span> Polynomial roots</a>
+  <ul class="collapse">
+  <li><a href="#roots-as-eigenvalues" id="toc-roots-as-eigenvalues" class="nav-link" data-scroll-target="#roots-as-eigenvalues"><span class="header-section-number">5.4.1</span> Roots as eigenvalues</a></li>
+  <li><a href="#multiple-roots" id="toc-multiple-roots" class="nav-link" data-scroll-target="#multiple-roots"><span class="header-section-number">5.4.2</span> Multiple roots</a></li>
+  <li><a href="#a-degree-100-example" id="toc-a-degree-100-example" class="nav-link" data-scroll-target="#a-degree-100-example"><span class="header-section-number">5.4.3</span> A degree 100 example</a></li>
+  </ul></li>
+  <li><a href="#multivariate-function-roots" id="toc-multivariate-function-roots" class="nav-link" data-scroll-target="#multivariate-function-roots"><span class="header-section-number">5.5</span> Multivariate function roots</a>
+  <ul class="collapse">
+  <li><a href="#gauss-newton-broyden" id="toc-gauss-newton-broyden" class="nav-link" data-scroll-target="#gauss-newton-broyden"><span class="header-section-number">5.5.1</span> Gauss-Newton, Broyden</a></li>
+  <li><a href="#newton-for-systems" id="toc-newton-for-systems" class="nav-link" data-scroll-target="#newton-for-systems"><span class="header-section-number">5.5.2</span> Newton for systems</a></li>
+  </ul></li>
+  <li><a href="#appendix-test-functions" id="toc-appendix-test-functions" class="nav-link" data-scroll-target="#appendix-test-functions"><span class="header-section-number">5.6</span> Appendix: Test functions</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Root Finding</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="contents" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="contents">Contents</h4>
+<ul>
+<li><p><strong>Univariate roots</strong><br>
+Brent-Dekker; Ridders’ method; bisection, secant and regula-falsi; Newton-Raphson; and Haley</p></li>
+<li><p><strong>Special aspects</strong><br>
+Quadratic roots; find all roots; high-accuracy roots; roots as fixed points</p></li>
+<li><p><strong>Complex roots</strong><br>
+Muller’s and Laguerre’s method</p></li>
+<li><p><strong>Polynomial roots</strong><br>
+Roots as eigenvalues; multiple roots; degree 100 example</p></li>
+<li><p><strong>Multivariate function roots</strong><br>
+Gauss-Newton; Broyden; Newton for systems</p></li>
+<li><p><strong>Appendix</strong>: Test functions</p></li>
+</ul>
+<hr>
+</section>
+<section id="univariate-roots" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="univariate-roots"><span class="header-section-number">5.1</span> Univariate roots</h2>
+<section id="brent-dekker" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="brent-dekker"><span class="header-section-number">5.1.1</span> Brent-Dekker</h3>
+<p>The basic routine for finding roots of univariate (i.e., one-dimensional) functions in Base R is <code>uniroot</code> which realizes the well-known <strong>Brent-Dekker method</strong> (implemented in C). It is an iterative state-of-the-art algorithm that combines bisection and quadratic interpolation.</p>
+<p>The user should be aware of the following restriction:</p>
+<ul>
+<li>The functions needs to have different sign at the end of the interval, otherwise an error will be thrown.</li>
+<li>If there is more than one root in the interval, Brent-Dekker will only find one of them, which one is undetermined.</li>
+<li>Zeros where the function just touches the x-axis without crossing it, cannot be found with Brent-Dekker or similar approaches.</li>
+</ul>
+<p>NOTE: The default tolerance in <code>uniroot</code> is too weak, we would recommend to always set <code>tol = 1e-08</code> at least.</p>
+<p>In ‘pracma’, two variants of Brent-Dekker are implemented in the functions <code>brentDekker</code> (alias <code>brent</code>) resp. <code>fzero</code>. <code>brentDekker</code> requires an interval to search in while <code>fzero</code> asks for an ‘initial guess’. That may help to avoid zeros you are not interested in.</p>
+<p>Both are kind of “demo” implementations and are not really recommended.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>f6  <span class="ot">&lt;-</span> <span class="cf">function</span>(x) (x<span class="dv">-1</span>)<span class="sc">*</span><span class="fu">exp</span>(<span class="sc">-</span><span class="dv">9</span><span class="sc">*</span>x) <span class="sc">+</span> x<span class="sc">^</span><span class="dv">9</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">brentDekker</span>(f6, <span class="sc">-</span><span class="fl">1.4</span>, <span class="fl">1.0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$root
+[1] 0.5367417
+
+$f.root
+[1] 4.844215e-16
+
+$f.calls
+[1] 15
+
+$estim.prec
+[1] 1.010156e-09</code></pre>
+</div>
+</div>
+</section>
+<section id="ridders-method" class="level3" data-number="5.1.2">
+<h3 data-number="5.1.2" class="anchored" data-anchor-id="ridders-method"><span class="header-section-number">5.1.2</span> Ridders’ method</h3>
+<p>What is really recommended is <strong>Ridders’ method</strong>, available in ‘pracma’ through the <code>ridders</code> function. This routine combines a ‘regula-falsi’ approach with successively approximating the function through exponentials. <code>ridders</code>is fast (faster than <code>uniroot</code>, though written in pure R).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ridders</span>(f6, <span class="sc">-</span><span class="fl">1.4</span>, <span class="fl">1.0</span>, <span class="at">tol=</span> <span class="fl">1e-08</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$root
+[1] 0.5367417
+
+$f.root
+[1] -6.938894e-18
+
+$niter
+[1] 18
+
+$estim.prec
+[1] 9.026113e-14</code></pre>
+</div>
+</div>
+<p>The <em>Numerical Recipes</em> state explicitely: “Ridders’ root finding method is a powerful variant of ‘regula falsi’ (and ‘false position’). In reliability and speed, this method is competitive with Brent-Dekker and similar approaches.”</p>
+</section>
+<section id="bisection-and-more" class="level3" data-number="5.1.3">
+<h3 data-number="5.1.3" class="anchored" data-anchor-id="bisection-and-more"><span class="header-section-number">5.1.3</span> Bisection and more</h3>
+<p>There are three more “demo implementations” – <code>bisect</code>, <code>secant</code>, and <code>regulaFalsi</code> – that do exactly what their names suggest. The user is invited to look at the code; especially <code>bisect</code> is simple and quite accurate.</p>
+<p>“Regula Falsi” is a combination of the Bisection and Secant methods and will most of the time give better results than both of them.</p>
+</section>
+<section id="newton-raphson-haley" class="level3" data-number="5.1.4">
+<h3 data-number="5.1.4" class="anchored" data-anchor-id="newton-raphson-haley"><span class="header-section-number">5.1.4</span> Newton-Raphson, Haley</h3>
+<p>Brent-Dekker and similar methods rely on the fact that the function has different signs at the ends of the interval (and thus on the “intermediate value theorem” of mathematical analysis). They are not working for functions that barely touch the x-axis. In this case, <strong>Newton’s method</strong> (historically correct it should be called “Simpson’s method”) may be appropriate.</p>
+<p>Newton’s method (aka the Newton-Raphson method) follows the gradient of the function in direction to the x-axis. If the function is (continuously) differentiable and the starting point has been chosen near enough to the root, it will find the root very fast, but it can also be lead us far away if this starting point is not chosen carefully.</p>
+<p>In ‘pracma’ Newton’s/Simpson’s method is implemented as <code>newtonRaphson</code> with alias <code>newton</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sin</span>(x)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">newtonRaphson</span>(f, <span class="fl">2.0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$root
+[1] 3.141593
+
+$f.root
+[1] 3.414839e-17
+
+$niter
+[1] 24
+
+$estim.prec
+[1] 5.843663e-09</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="special-aspects" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="special-aspects"><span class="header-section-number">5.2</span> Special aspects</h2>
+<section id="quadratic-roots" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="quadratic-roots"><span class="header-section-number">5.2.1</span> Quadratic roots</h3>
+<p>Quadratic (and higher-order roots) roots are zeros where the function just touches the x-axis without crossing it. Therefore, Brent-Dekker and similar approaches cannot be applied.</p>
+<p>In such cases, Newton’s method may be your best choice, but a reliable starting point is to be known. The <code>findzeros</code> routine discussed in the following section may be a good way to find such a value.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fab <span class="ot">&lt;-</span> <span class="cf">function</span>(x, a, b) x<span class="sc">^</span>a <span class="sc">-</span> b</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">newton</span>(fab, <span class="fl">1.0</span>, <span class="at">a =</span> <span class="dv">100</span>, <span class="at">b =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$root
+[1] 1.006956
+
+$f.root
+[1] 1.474376e-13
+
+$niter
+[1] 5
+
+$estim.prec
+[1] 3.34926e-09</code></pre>
+</div>
+</div>
+<p>It computes the <code>a</code>-th root of b, here the 100th root of 2.0. Be careful with the input values (e.g., <span class="math inline">\(b &gt; 0\)</span>).</p>
+</section>
+<section id="find-all-roots" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="find-all-roots"><span class="header-section-number">5.2.2</span> Find all roots</h3>
+<p>We have seen that root finding methods stop after having found a first zero in a given interval. <code>uniroot.all</code> in package ‘rootsolve’ finds all simple roots, but fails to find quadratic and higher-order roots (where the function does <em>not</em> cross the x-axis).</p>
+<p>Here the function <code>findzeros</code> comes to rescue: It finds all roots that at least are a certain ‘tolerance’ apart – by splitting the interval in smaller intervals and applying a combination of Brent-Dekker and Newton’s method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(x) x <span class="sc">*</span> <span class="fu">sin</span>(pi<span class="sc">*</span>x)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">findzeros</span>(f, <span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -2 -1  0  1  2</code></pre>
+</div>
+</div>
+<p>If the function values at endpoints of a subinterval are both positive or negative, the minimum or maximum will be determined and checked for a possible zero. The endpoints will be tested separately.</p>
+</section>
+<section id="high-accuracy-roots" class="level3" data-number="5.2.3">
+<h3 data-number="5.2.3" class="anchored" data-anchor-id="high-accuracy-roots"><span class="header-section-number">5.2.3</span> High-accuracy roots</h3>
+<p>Sometimes it is necessary to determine a root with high accuracy. Take the test function <code>f12</code> that is extremely flat around the root between 1 and 2.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>f12 <span class="ot">&lt;-</span> <span class="cf">function</span>(x)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">log</span>(x) <span class="sc">+</span> x<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span><span class="fu">exp</span>(<span class="dv">1</span>)) <span class="sc">-</span> <span class="dv">2</span> <span class="sc">*</span> x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="fu">exp</span>(<span class="dv">1</span>)) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">fplot</span>(f12, <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">2.5</span>))</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fl">0.0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="rootfinding_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Different root finders will give different results like</p>
+<pre><code>uniroot        |  1.6487 07674  |  tol = 1e-15 used for all
+bisect         |  1.6487 07057  |  
+regulaFalsi    |  1.6487 11081  |  
+ridders        |  1.6487 13958  |  
+brentDekker    |  1.6487 37933  |  
+fzero          |  1.6487 13285  |  starting point 2.2
+newtonRaphson  |  1.6487 09082  |  with exact derivative
+
+ridders+Rmpfr  |  1.6487 21270  |  prec = 128 bits
+TRUE value     |  1.6487 21271  |  sqrt(exp(1))</code></pre>
+<p>Instead we will use multiple-precision arithmetic with the ‘Rmpfr’ package. <code>ridders</code> is compatible with “big floats”, but we need to strengthen our function <code>f12</code> to correctly handle multiple precision numbers.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> Rmpfr<span class="sc">::</span><span class="fu">mpfr</span>(<span class="fl">1.0</span>, <span class="dv">128</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>f12a <span class="ot">&lt;-</span> <span class="cf">function</span>(x)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">log</span>(x) <span class="sc">+</span> x<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span><span class="fu">exp</span>(m1)) <span class="sc">-</span> <span class="dv">2</span> <span class="sc">*</span> x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="fu">exp</span>(m1)) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ridders</span>(f12a, <span class="dv">1</span>, <span class="fl">3.4</span>)<span class="sc">$</span>root</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1 'mpfr' number of precision  128   bits 
+[1] 1.648721270699944708468219129114373800688</code></pre>
+</div>
+</div>
+<p>We can see in the table above that now we get the result accurate up to <span class="math inline">\(10^{-10}\)</span> (or ten digits).</p>
+</section>
+<section id="roots-as-fixed-points" class="level3" data-number="5.2.4">
+<h3 data-number="5.2.4" class="anchored" data-anchor-id="roots-as-fixed-points"><span class="header-section-number">5.2.4</span> Roots as fixed points</h3>
+<p>TO BE DONE</p>
+<hr>
+</section>
+</section>
+<section id="complex-roots" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="complex-roots"><span class="header-section-number">5.3</span> Complex roots</h2>
+<p>Determining roots of complex functions cannot be done with the functions presented above. Two alternatives, both unsatisfying but sometimes helpful, are:</p>
+<ul>
+<li><p>Given a function <span class="math inline">\(f: \mathbb{C} \to \mathbb{C}\)</span>, it can be redefined as a function <span class="math inline">\(F: \mathbb{R}^2 \to \mathbb{R}^2\)</span> by splitting it into real and imaginary parts. Then a 2-dimensional version of Newton’s method can be applied, see below the section on “Multivariate function roots”.</p></li>
+<li><p>One can instead look at the function <span class="math inline">\(F(x, y) = |f(x + iy)|\)</span> and try to identify the minima where <span class="math inline">\(F(x,y) = 0\)</span>, applying an optimization solver (with appropriate starting points).</p></li>
+</ul>
+<p>‘pracma’ contains two routines to find roots of complex functions (of one variable), Mullers root finding method and Laguerre’s method for finding roots of complex polynomials.</p>
+<section id="mullers-method" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="mullers-method"><span class="header-section-number">5.3.1</span> Muller’s method</h3>
+<p>Muller’s root finding method, similar to the secant method, uses a parabola through three points for approximating the curve. It needs three points that should enclose the assumed root.</p>
+<p>Let’s calculate the first zero of Riemann’s Zeta function on the “critical line” (which is <span class="math inline">\(z0 = 14.13472514173469379...\)</span>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fz <span class="ot">&lt;-</span> pracma<span class="sc">::</span>zeta</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>z0 <span class="ot">&lt;-</span><span class="fu">muller</span>(fz, <span class="fl">0.25</span><span class="sc">+</span>10i, <span class="fl">0.75</span><span class="sc">+</span>10i, 15i)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(z0<span class="sc">$</span>root, <span class="at">digits =</span> <span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5+14.13472514173469i</code></pre>
+</div>
+</div>
+<p>With Muller’s method one can search for complex zeros by systematically covering the area concerned with triangles.</p>
+</section>
+<section id="laguerres-method" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="laguerres-method"><span class="header-section-number">5.3.2</span> Laguerre’s method</h3>
+<p>Laguerre’s method is a root finding method tailored for polynomials and applies to complex polynomials and compex roots. We will look at the polynomial</p>
+<p><span class="math display">\[
+  x^2 - 5.4\ x^4 + 14.45\ x^3 - 32.292\ x^2 + 47.25\ x - 26.46
+\]</span></p>
+<p>that has roots <span class="math inline">\(\pm \sqrt{-5}\)</span>, <span class="math inline">\(2.1\)</span> (twofold), and <span class="math inline">\(1.2\)</span>.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>p5 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="sc">-</span><span class="fl">5.4</span>, <span class="fl">14.45</span>, <span class="sc">-</span><span class="fl">32.292</span>, <span class="fl">47.25</span>, <span class="sc">-</span><span class="fl">26.46</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">laguerre</span>(p, <span class="dv">1</span>)   <span class="co">#=&gt; 1.2</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">laguerre</span>(p, <span class="dv">2</span>)   <span class="co">#=&gt; 2.099987     (should be 2.1)</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">laguerre</span>(p, 2i)  <span class="co">#=&gt; 0+2.236068i  (+- 2.2361i, i.e sqrt(-5))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Computations are carried out in complex arithmetic, and it is possible to obtain a complex root even if the starting estimate is real.</p>
+<hr>
+</section>
+</section>
+<section id="polynomial-roots" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="polynomial-roots"><span class="header-section-number">5.4</span> Polynomial roots</h2>
+<p>Base R has the function <code>polyroot</code> that implements the Jenkins-Traub algorithm. It finds proper roots on by one and decreases the order of the polynomial by deflating it (i.e., dividing by a root term).</p>
+<p>Then there is package ‘polynomF’ for handling of polynomials. <code>solve.polynom(p, q)</code> will solve polynomial equations <span class="math inline">\(p(x) = q(x)\)</span> where <code>p</code> and <code>q</code> have to be defined as of class <code>polynom</code>.</p>
+<section id="roots-as-eigenvalues" class="level3" data-number="5.4.1">
+<h3 data-number="5.4.1" class="anchored" data-anchor-id="roots-as-eigenvalues"><span class="header-section-number">5.4.1</span> Roots as eigenvalues</h3>
+<p>In ‘pracma’ polynomials are represented as vectors of their coefficients, starting with the highest monomial (see the chapter on polynomials in the handbook). Thus, the vector <code>c(1,2,3,4,5)</code> will represent the polynomial <span class="math inline">\(x^4 + 2x^3 + 3x^2 + 4x + 5\)</span>.</p>
+<p>One standard approach to find <em>all</em> roots of a polynomial is to calculate the eigenvalues of the so-called <em>companion matrix</em>. In general this works quite well and is accurate enough for most applications. In ‘pracma’ this is implemented as function <code>roots</code>.</p>
+<p>As an example find the roots of <span class="math inline">\((x+2)(x+1)(x-1)(x-2)\)</span> (which are -2, -1, 1, 2, obviously).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">Poly</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>, <span class="dv">2</span>))     <span class="co"># x^5 - 5 x^3 + 4</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">roots</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -2  2 -1  1</code></pre>
+</div>
+</div>
+<p><code>roots</code> will also solve polynomials with complex coefficients, for example here we find solutions to <span class="math inline">\(x^2 - i = 0\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="sc">-</span>1i)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">roots</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  0.7071068+0.7071068i -0.7071068-0.7071068i</code></pre>
+</div>
+</div>
+<p>In general the results of <code>polyroot</code> and <code>roots</code> are identical. But there are types of polynomials for which the results (of both) are unsatisfactory, for instance the “Wilkinson polynomial”.</p>
+</section>
+<section id="multiple-roots" class="level3" data-number="5.4.2">
+<h3 data-number="5.4.2" class="anchored" data-anchor-id="multiple-roots"><span class="header-section-number">5.4.2</span> Multiple roots</h3>
+<p>Another problem are multiple roots. If several multiple roots or roots with higher orders are present, the results become unbearable (for <code>polyroot</code> and <code>roots</code>). In this case the <code>polyroots</code> function attempts to refine the results of <code>roots</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">6</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>)   <span class="co">#  x^10 - 4x^8 + 6x^6 - 4x^4 + x^2</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">roots</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  0.0000000+0.0000000i  0.0000000+0.0000000i  1.0000783+0.0000000i
+ [4] -1.0000633+0.0000633i -1.0000633-0.0000633i  1.0000000+0.0000783i
+ [7]  1.0000000-0.0000783i -0.9999367+0.0000633i -0.9999367-0.0000633i
+[10]  0.9999217+0.0000000i</code></pre>
+</div>
+</div>
+<p>These are not very accurate roots. You could try to refine one by one, or:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">polyroots</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  root mult
+1    0    2
+2    1    4
+3   -1    4</code></pre>
+</div>
+</div>
+<p>The function <code>rootsmult</code> attempts to determine the order of possible roots. As this computation is problematic in double precision, it is only really applicable to integer roots.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rootsmult</span>(p, <span class="fl">1.0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+<p>It will give a warning if that is x value not a root (in double precision).</p>
+</section>
+<section id="a-degree-100-example" class="level3" data-number="5.4.3">
+<h3 data-number="5.4.3" class="anchored" data-anchor-id="a-degree-100-example"><span class="header-section-number">5.4.3</span> A degree 100 example</h3>
+<p>We look at an example that has been discussed on R-help a long time ago. Find the root of the following polynomial near <span class="math inline">\(x = 2\)</span>:</p>
+<p><span class="math display">\[
+  x^{100}-2 x^{99}+10 x^{50}+6 x-4000
+\]</span></p>
+<p>Using <code>roots</code> will display a beautiful “circle of roots” with on outlier at or near 2.0.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">numeric</span>(<span class="dv">101</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>p[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span>; p[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span>; p[<span class="dv">51</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; p[<span class="dv">100</span>] <span class="ot">&lt;-</span> <span class="dv">6</span>; p[<span class="dv">101</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">4000</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">roots</span>(p), <span class="at">col =</span> <span class="dv">4</span>, <span class="at">pch =</span> <span class="st">'x'</span>, <span class="at">asp =</span> <span class="dv">1</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Roots of a polynomial of order 100"</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="fu">grid</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="rootfinding_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>There appear to be real roots near -1.0, 1.0 and at <span class="math inline">\(x = 2.0\)</span>. Can we verify this? First, take the approximation calculated by <code>roots</code> and apply Newton’s rule to find a good double-precision approximation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>x0 <span class="ot">&lt;-</span> <span class="fu">Re</span>(<span class="fu">roots</span>(p)[<span class="dv">1</span>])</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> x0 <span class="sc">-</span> <span class="fu">polyval</span>(p, x0)<span class="sc">/</span><span class="fu">polyval</span>(<span class="fu">polyder</span>(p), x0)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x0, <span class="at">digits =</span> <span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.999999999999979</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x1, <span class="at">digits =</span> <span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.999999999999982</code></pre>
+</div>
+</div>
+<p>Laguerre’s method applied at -1.075 gives us the same value as <code>roots(p)[100]</code>. (Applied at 1.0 it will return the other root near 2.0.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">laguerre</span>(p, <span class="sc">-</span><span class="fl">1.075</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x1, <span class="at">digits =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -1.074126672</code></pre>
+</div>
+</div>
+<p>To see if there is a real root near +1.0, we enclose it with Muller’s method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>fp <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">polyval</span>(p, x)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">muller</span>(fp, <span class="fl">1.0</span>, <span class="fl">1.05</span>, <span class="fl">1.1</span>)<span class="sc">$</span>root</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.074658+0.172133i</code></pre>
+</div>
+</div>
+<p>So there is no real root around 1.0, the two roots found are the only real roots. (This could be verified with Steiner’s rule.)</p>
+<p>NOTE: None of the root finding routines mentioned above will come close to this result in accuracy (except, maybe, <code>bisect</code>). It is suggested to always handle roots of polynomials specially.</p>
+<hr>
+</section>
+</section>
+<section id="multivariate-function-roots" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="multivariate-function-roots"><span class="header-section-number">5.5</span> Multivariate function roots</h2>
+<p>There are no routines in Base R for determining roots of function <span class="math inline">\(F: \mathbb{R}^m \to \mathbb{R}^n\)</span> for <span class="math inline">\(m, n \ge 2\)</span>, that is of “systems of nonlinear equations”. In textbooks two approaches are mentioned <em>Gauss-Newton</em> and <em>Broyden</em>, a variant thereof.</p>
+<p>The package ‘nleqslv’ provides a careful implementation of these with many options for the function <code>nleqslv</code>. The implementation as <code>multiroot</code> in package ‘rootSolve’ is also very good. It is true that Gauss-Newton approaches will often not find true solutions for higher-dimensional problems.</p>
+<section id="gauss-newton-broyden" class="level3" data-number="5.5.1">
+<h3 data-number="5.5.1" class="anchored" data-anchor-id="gauss-newton-broyden"><span class="header-section-number">5.5.1</span> Gauss-Newton, Broyden</h3>
+<p>In ‘pracma’, there is <code>fsolve</code> that applies Gauss-Newton for systems <span class="math inline">\(F: \mathbb{R}^m \to \mathbb{R}^n\)</span> and Broyden in case <span class="math inline">\(m = n\)</span>. Please note that for Gauss-Newton the same reservations are valid as for Newton in the one-dimensional case (i.e., the starting point has to be chosen carefully).</p>
+<p>We solve the following complex equation</p>
+<p><span class="math display">\[
+  \sin^2(z) + \sqrt{z} - \log(z) = 0
+\]</span></p>
+<p>by splitting in real and imaginary parts and constructing a function <code>F</code> from <span class="math inline">\(\mathbb{R}^2\)</span> to <span class="math inline">\(\mathbb{R}^2\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>F <span class="ot">&lt;-</span> <span class="cf">function</span>(p) {</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    z  <span class="ot">&lt;-</span> p[<span class="dv">1</span>] <span class="sc">+</span> p[<span class="dv">2</span>]<span class="sc">*</span>1i</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    fz <span class="ot">&lt;-</span> <span class="fu">sin</span>(z)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">sqrt</span>(z) <span class="sc">-</span> <span class="fu">log</span>(z)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>( <span class="fu">c</span>(<span class="fu">Re</span>(fz), <span class="fu">Im</span>(fz)) )</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">fsolve</span>(F, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$x
+[1] 0.2555197 0.8948303
+
+$fval
+[1] -4.849507e-10 -5.435474e-10</code></pre>
+</div>
+</div>
+<p>that is, <span class="math inline">\(0.2555197 + 0.8948303i\)</span> is a solution (there are more). Calling <code>gaussNewton(c(1, 1), F)</code> or <code>broyden(F, c(1, 1))</code> directly would give us more information about accuracy and number of iterations.</p>
+</section>
+<section id="newton-for-systems" class="level3" data-number="5.5.2">
+<h3 data-number="5.5.2" class="anchored" data-anchor-id="newton-for-systems"><span class="header-section-number">5.5.2</span> Newton for systems</h3>
+<p>There is also the <code>newtonsys</code> routine that applies the pure Newton method to systems of nonlinear function with <span class="math inline">\(m = n\)</span>; it may be faster, but less stable and reliable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">newtonsys</span>(F, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$zero
+[1] 0.2555197 0.8948303
+
+$fnorm
+[1] 4.236705e-16
+
+$niter
+[1] 8</code></pre>
+</div>
+</div>
+<p>All these routines can be provided with the <em>Jacobian</em> as an input argument. This is only useful if an exact, i.e.&nbsp;symbolic, Jacobian ist known.</p>
+<hr>
+</section>
+</section>
+<section id="appendix-test-functions" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="appendix-test-functions"><span class="header-section-number">5.6</span> Appendix: Test functions</h2>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>f1  <span class="ot">&lt;-</span> <span class="cf">function</span>(x)                          <span class="co"># [0, 1.2],       0.399 422 2917</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>            x<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> (x<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span> <span class="sc">+</span> <span class="fu">sqrt</span>(<span class="dv">2</span>)<span class="sc">*</span><span class="fu">sin</span>(x)) <span class="sc">-</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span><span class="dv">18</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>f2  <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="dv">11</span><span class="sc">*</span>x<span class="sc">^</span><span class="dv">11</span> <span class="sc">-</span> <span class="dv">1</span>              <span class="co"># [0.4, 1.6],     0.804 133 0975</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>f3  <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="dv">35</span><span class="sc">*</span>x<span class="sc">^</span><span class="dv">35</span> <span class="sc">-</span> <span class="dv">1</span>              <span class="co"># [-0.5, 1.9],    0.903 407 6632</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>f4  <span class="ot">&lt;-</span> <span class="cf">function</span>(x)                          <span class="co"># [-0.5, 0.7],    0.077 014 24135</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>            <span class="dv">2</span><span class="sc">*</span>(x<span class="sc">*</span><span class="fu">exp</span>(<span class="sc">-</span><span class="dv">9</span>) <span class="sc">-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="dv">9</span><span class="sc">*</span>x)) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>f5  <span class="ot">&lt;-</span> <span class="cf">function</span>(x) x<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> (<span class="dv">1</span> <span class="sc">-</span> x)<span class="sc">^</span><span class="dv">9</span>          <span class="co"># [-1.4, 1],      0.259 204 4937</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>f6  <span class="ot">&lt;-</span> <span class="cf">function</span>(x) (x<span class="dv">-1</span>)<span class="sc">*</span><span class="fu">exp</span>(<span class="sc">-</span><span class="dv">9</span><span class="sc">*</span>x) <span class="sc">+</span> x<span class="sc">^</span><span class="dv">9</span>    <span class="co"># [-0.8, 1.6],    0.536 741 6626</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>f7  <span class="ot">&lt;-</span> <span class="cf">function</span>(x) x<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">sin</span>(x<span class="sc">/</span><span class="dv">9</span>) <span class="sc">-</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>     <span class="co"># [-0.5, 1.9],    0.4475417621</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>f8  <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="dv">1</span><span class="sc">/</span><span class="dv">8</span> <span class="sc">*</span> (<span class="dv">9</span> <span class="sc">-</span> <span class="dv">1</span><span class="sc">/</span>x)          <span class="co"># [0.001, 1.201], 0.111 111 1111</span></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>f9  <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">tan</span>(x) <span class="sc">-</span> x <span class="sc">-</span> <span class="fl">0.0463025</span>   <span class="co"># [-0.9, 1.5],    0.500 000 0340</span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>f10 <span class="ot">&lt;-</span> <span class="cf">function</span>(x)                          <span class="co"># [0.4, 1],       0.679 808 9215</span></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>            x<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> x<span class="sc">*</span><span class="fu">sin</span>(<span class="fu">sqrt</span>(<span class="dv">75</span>)<span class="sc">*</span>x) <span class="sc">-</span> <span class="fl">0.2</span></span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>f11 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) x<span class="sc">^</span><span class="dv">9</span> <span class="sc">+</span> <span class="fl">0.0001</span>             <span class="co"># [-1.2, 0],     -0.359 381 3664</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>f12 <span class="ot">&lt;-</span> <span class="cf">function</span>(x)                          <span class="co"># [1, 3.4],       1.648 721 27070</span></span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>            <span class="fu">log</span>(x) <span class="sc">+</span> x<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span><span class="fu">exp</span>(<span class="dv">1</span>)) <span class="sc">-</span> <span class="dv">2</span> <span class="sc">*</span> x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="fu">exp</span>(<span class="dv">1</span>)) <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./integrals.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Integation</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

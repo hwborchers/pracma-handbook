@@ -1,0 +1,26 @@
+project:
+  type: book
+
+book:
+  title: "pracma Handbook"
+  author: "Hans W Borchers"
+  date: "5/10/2023"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - specfun.qmd
+    - derivatives.qmd
+    - integrals.qmd
+    - rootfinding.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: united
+  pdf:
+    documentclass: scrreprt
+
+editor: visual
+
